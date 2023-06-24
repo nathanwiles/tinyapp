@@ -12,6 +12,7 @@ crossorigin="anonymous"
 </head>
 
 <body>
+<%- include('partials/_header') %>
   <div class="card text-center">
     <div class="card-header"></div>
     <div class="card-body">
@@ -19,7 +20,6 @@ crossorigin="anonymous"
       <p class="card-text">
         Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
       </p>
-      <a class="nav-link" href="/urls/new">Add New TinyURL</a> 
     </div>
     <div class="card-footer text-muted"></div>
   </div>
