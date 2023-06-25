@@ -55,7 +55,8 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    res.status(404).send("Tiny URL does not exist");
+    res.status(404);
+    res.render("urls_404");
   } else {
     const templateVars = {
       id: req.params.id,
