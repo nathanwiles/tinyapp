@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-   <%- include('partials/_head') %>
+    <%- include('partials/_head') %>
     <title>TinyApp</title>
   </head>
   <body>
     <%- include('partials/_header') %>
     <main style="margin: 1em">
       <h3>My URLs</h3>
-      <table class="table">
+      <table class="table table-striped table-bordered">
         <thead>
           <tr>
             <th scope="col">Short URL ID</th>
             <th scope="col">Long URL</th>
+            <th scope="col">Edit</th>
             <th scope="col">Delete</th>
           </tr>
         </thead>
@@ -20,14 +21,15 @@
         <tbody>
           <% for (const id in urls) { %>
           <tr>
-            <td>
-              <a class="nav_item nav-link" href="/urls/<%= id %>"><%= id %></a>
-              
-            </td>
+            <td class=""><%= id %></td>
             <td><%= urls[id] %></td>
             <td>
+              <a class="btn btn-primary" href="/urls/<%= id %>">Edit</a>
+            </td>
+            <td>
               <form method="POST" action="/urls/<%= id %>/delete">
-              <button class="btn btn-danger" type="submit">Delete</button>
+                <button class="btn btn-danger" type="submit">Delete</button>
+              </form>
             </td>
           </tr>
           <% } %>
