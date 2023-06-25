@@ -5,6 +5,9 @@
  * logs message to server console when a database is saved
  */
 
+const fs = require("fs");
+
+
 const saveDatabase = (path, database) => {
   fs.writeFile(path, JSON.stringify(database), "utf-8", (err) => {
     if (err) console.log(err);
