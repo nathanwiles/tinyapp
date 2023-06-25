@@ -1,5 +1,5 @@
 /**
- * Formats the longURL to include http://www. if it is not included. some edge cases not handled.
+ * Formats the longURL to include http://www. if it is not included.
  * 
  * @param {*} rawlongURL 
  * @returns  {string} formattedLongURL
