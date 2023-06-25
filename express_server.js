@@ -21,8 +21,8 @@ const generateTinyURLObject = function() {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   for (let i = 0; i < 6; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
-    const randonChar = characters[randomIndex]
-    tinyURL += randonChar;
+    const randomChar = characters[randomIndex]
+    tinyURL += randomChar;
   }
   const tinyObject = { tinyURL }
   return tinyObject;
