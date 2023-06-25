@@ -91,6 +91,16 @@ fs.readFile("./data/database.json", (err, data) => {
     res.redirect("/urls");
   });
 
+  app.post("/urls/:id", (req, res) => {
+    const id = req.params.id;
+    const submittedLongURL = req.body.longURL;
+    const newLongURL = formatLongURL(submittedLongURL);
+    urlDatabase[id] = newLongURL;
+    console.log(`Updated ${id} in database...`);
+    saveDatabase(databasePath, urlDatabase);
+    res.redirect("/urls");
+  });
+
 
   // Listen for requests
   app.listen(PORT, () => {
