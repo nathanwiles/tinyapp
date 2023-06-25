@@ -3,30 +3,19 @@
  * tinyapp project
  */
 
+// import Database
+const { urlDatabase } = require("./data/urlDatabase");
+const { generateTinyURL } = require("./helpers/generateTinyURL");
 // Setup server
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
 
-// data base
-const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com",
-};
+// get database
 
-// generate random string function
-const generateTinyURL = function () {
-  let tinyURL = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 6; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length);
-    const randomChar = characters[randomIndex];
-    tinyURL += randomChar;
-  }
-  return tinyURL;
-};
+
+
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
