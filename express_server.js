@@ -38,7 +38,7 @@ fs.readFile("./data/database.json", (err, data) => {
   });
 
   app.get("/", (req, res) => {
-    res.send("Hello!");
+    res.render("tinyapp_home");
   });
 
   app.get("/urls.json", (req, res) => {
