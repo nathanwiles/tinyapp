@@ -15,6 +15,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+// generate random string function
+const generateTinyURLObject = function() {
+  let tinyURL = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < 6; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    const randonChar = characters[randomIndex]
+    tinyURL += randonChar;
+  }
+  const tinyObject = { tinyURL }
+  return tinyObject;
+};
+
 // Middleware
 app.use(express.urlencoded({ extended: true }));
 
@@ -48,6 +61,8 @@ app.get("/urls/:id", (req, res) => {
 // Post requests
 app.post("/urls", (req, res) => {
   console.log(req.body);
+  const newTinyURL = generateTinyURLObject()
+  console.log(newTinyURL);
   res.send("Ok"); // temporary response
 });
 
