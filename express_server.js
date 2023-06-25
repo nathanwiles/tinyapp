@@ -83,6 +83,14 @@ fs.readFile("./data/database.json", (err, data) => {
     res.redirect(`/urls/${newTinyURL}`);
   });
 
+  app.post("/urls/:id/delete", (req, res) => {
+    const id = req.params.id;
+    delete urlDatabase[id];
+    console.log(`Deleted ${id} from database...`);
+    saveDatabase(databasePath, urlDatabase);
+    res.redirect("/urls");
+  });
+
 
   // Listen for requests
   app.listen(PORT, () => {
