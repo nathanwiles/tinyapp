@@ -15,6 +15,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+// Middleware
 app.use(express.urlencoded({ extended: true }));
 
 
@@ -44,7 +45,11 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars)
 });
-// End of GET requests
+// Post requests
+app.post("/urls", (req, res) => {
+  console.log(req.body);
+  res.send("Ok"); // temporary response
+});
 
 // Listen for requests
 app.listen(PORT, () => {
