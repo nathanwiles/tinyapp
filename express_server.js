@@ -16,7 +16,7 @@ const urlDatabase = {
 };
 
 // generate random string function
-const generateTinyURLObject = function() {
+const generateTinyURL = function() {
   let tinyURL = "";
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -25,8 +25,7 @@ const generateTinyURLObject = function() {
     const randomChar = characters[randomIndex];
     tinyURL += randomChar;
   }
-  const tinyObject = { tinyURL };
-  return tinyObject;
+  return tinyURL;
 };
 
 // Middleware
@@ -64,10 +63,11 @@ app.get("/urls/:id", (req, res) => {
 
 // Post requests
 app.post("/urls", (req, res) => {
-  console.log(req.body);
-  const newTinyURL = generateTinyURLObject();
-  console.log(newTinyURL);
-  res.send("Ok"); // temporary response
+  const newLongURL = req.body.longURL;
+  const newTinyURL = generateTinyURL();
+  urlDatabase[newTinyURL] = newLongURL;
+  
+  res.redirect(`/urls/${newTinyURL}`); 
 });
 
 // Listen for requests
