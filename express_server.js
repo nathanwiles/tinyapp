@@ -70,17 +70,33 @@ fs.readFile("./data/database.json", (err, data) => {
   app.post("/urls", (req, res) => {
     let newLongURL = req.body.longURL;
     const newTinyURL = generateTinyURL();
-    // check for www. and add it if it's not there
-    if (newLongURL.slice(0, 4) === "www.") {
-      newLongURL = "http://" + newLongURL;
-    } else if (
-      newLongURL.slice(0, 7) !== "http://" &&
-      newLongURL.slice(0, 8) !== "https://"
-    ) {
-      newLongURL = "http://www." + newLongURL;
-    };
+
+    let splitLongURL = newLongURL.split(".");
+    const prefix = "http://www";
+    
+    let firstElement = splitLongURL[0];
+    let lengthOfFirstElement = firstElement.length;
+    console.log(firstElement);
+
+    if (
+      firstElement.includes("http") ||
+      firstElement.includes(":/") ||
+      firstElement.includes("htp") ||
+      firstElement.includes("ww")
+      ) {
+
+
+      firstElement = firstElement.includes("https") ? "https://www" : prefix;
+      splitLongURL[0] = firstElement;
+    } else if (!firstElement.includes("http")) {
+      splitLongURL.unshift(prefix);
+    }
+
+    newLongURL = splitLongURL.join(".");
 
     urlDatabase[newTinyURL] = newLongURL;
+    console.log(`Received new tinyURL, saving database...`);
+    fs.writeFileSync("./data/database.json", JSON.stringify(urlDatabase));
 
     res.redirect(`/urls/${newTinyURL}`);
   });
@@ -88,14 +104,5 @@ fs.readFile("./data/database.json", (err, data) => {
   // Listen for requests
   app.listen(PORT, () => {
     console.log(`tinyapp listening on port ${PORT}!`);
-  });
-
-  // Save database on server shutdown
-  ["SIGINT", "SIGTERM", "SIGQUIT"].forEach((signal) => {
-    process.on(signal, () => {
-      console.log(`Received ${signal}, saving database...`);
-      fs.writeFileSync("./data/database.json", JSON.stringify(urlDatabase));
-      process.exit(0);
-    });
   });
 });
