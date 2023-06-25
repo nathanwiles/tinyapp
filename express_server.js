@@ -4,12 +4,13 @@
  * It is responsible for handling all requests and responses.
  * It imports its database from the database.json file and saves it on server shutdown.
  */
-
-const { generateTinyURL } = require("./helpers/generateTinyURL");
 const express = require("express");
-const formatLongURL = require("./helpers/formatLongURL");
 const fs = require("fs");
 
+const formatLongURL = require("./helpers/formatLongURL");
+const generateTinyURL = require("./helpers/generateTinyURL");
+const saveDatabase = require("./helpers/saveDatabase");
+const databasePath = "./data/database.json";
 
 // Import database
 fs.readFile("./data/database.json", (err, data) => {
@@ -69,21 +70,19 @@ fs.readFile("./data/database.json", (err, data) => {
 
   // Post requests
   app.post("/urls", (req, res) => {
-    let reqLongURL = req.body.longURL;
-
-    const newLongURL = formatLongURL(reqLongURL);
+    const submittedLongURL = req.body.longURL;
+    const newLongURL = formatLongURL(submittedLongURL);
     const newTinyURL = generateTinyURL();
 
-
     urlDatabase[newTinyURL] = newLongURL;
+
     console.log(`Received new tinyURL, saving database...`);
-    fs.writeFile("./data/database.json", JSON.stringify(urlDatabase),"utf-8", (err) => {
-      if (err) console.log(err);
-      console.log("Database saved!");
-    });
+
+    saveDatabase(databasePath, urlDatabase);
 
     res.redirect(`/urls/${newTinyURL}`);
   });
+
 
   // Listen for requests
   app.listen(PORT, () => {
