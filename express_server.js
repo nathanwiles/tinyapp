@@ -7,8 +7,9 @@
 
 const { generateTinyURL } = require("./helpers/generateTinyURL");
 const express = require("express");
-const { parse } = require("path");
+const formatLongURL = require("./helpers/formatLongURL");
 const fs = require("fs");
+
 
 // Import database
 fs.readFile("./data/database.json", (err, data) => {
@@ -68,35 +69,18 @@ fs.readFile("./data/database.json", (err, data) => {
 
   // Post requests
   app.post("/urls", (req, res) => {
-    let newLongURL = req.body.longURL;
+    let reqLongURL = req.body.longURL;
+
+    const newLongURL = formatLongURL(reqLongURL);
     const newTinyURL = generateTinyURL();
 
-    let splitLongURL = newLongURL.split(".");
-    const prefix = "http://www";
-    
-    let firstElement = splitLongURL[0];
-    let lengthOfFirstElement = firstElement.length;
-    console.log(firstElement);
-
-    if (
-      firstElement.includes("http") ||
-      firstElement.includes(":/") ||
-      firstElement.includes("htp") ||
-      firstElement.includes("ww")
-      ) {
-
-
-      firstElement = firstElement.includes("https") ? "https://www" : prefix;
-      splitLongURL[0] = firstElement;
-    } else if (!firstElement.includes("http")) {
-      splitLongURL.unshift(prefix);
-    }
-
-    newLongURL = splitLongURL.join(".");
 
     urlDatabase[newTinyURL] = newLongURL;
     console.log(`Received new tinyURL, saving database...`);
-    fs.writeFileSync("./data/database.json", JSON.stringify(urlDatabase));
+    fs.writeFile("./data/database.json", JSON.stringify(urlDatabase),"utf-8", (err) => {
+      if (err) console.log(err);
+      console.log("Database saved!");
+    });
 
     res.redirect(`/urls/${newTinyURL}`);
   });
