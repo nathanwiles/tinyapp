@@ -18,4 +18,4 @@ const generateTinyURL = function () {
   return tinyURL;
 };
 
-module.exports = { generateTinyURL };
+module.exports = generateTinyURL ;
