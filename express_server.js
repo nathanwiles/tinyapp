@@ -1,9 +1,9 @@
 /*
-* Written by: Nathan Wiles
-* Description: This file contains the server code for the TinyApp project.
-* It is responsible for handling all requests and responses.
-* It imports its database from the database.json file and saves it on server shutdown.
-*/
+ * Written by: Nathan Wiles
+ * Description: This file contains the server code for the TinyApp project.
+ * It is responsible for handling all requests and responses.
+ * It imports its database from the database.json file and saves it on server shutdown.
+ */
 
 const { generateTinyURL } = require("./helpers/generateTinyURL");
 const express = require("express");
@@ -68,8 +68,18 @@ fs.readFile("./data/database.json", (err, data) => {
 
   // Post requests
   app.post("/urls", (req, res) => {
-    const newLongURL = req.body.longURL;
+    let newLongURL = req.body.longURL;
     const newTinyURL = generateTinyURL();
+    // check for www. and add it if it's not there
+    if (newLongURL.slice(0, 4) === "www.") {
+      newLongURL = "http://" + newLongURL;
+    } else if (
+      newLongURL.slice(0, 7) !== "http://" &&
+      newLongURL.slice(0, 8) !== "https://"
+    ) {
+      newLongURL = "http://www." + newLongURL;
+    };
+
     urlDatabase[newTinyURL] = newLongURL;
 
     res.redirect(`/urls/${newTinyURL}`);
