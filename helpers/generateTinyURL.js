@@ -1,4 +1,11 @@
-// generate random string function
+/**
+ * generate random string function
+ * @returns {string} random string
+ * @example
+ * generateTinyURL() // => 'aBcDeF'
+ * generateTinyURL() // => '1a2b3c'
+ */
+
 const generateTinyURL = function () {
   let tinyURL = "";
   const characters =
