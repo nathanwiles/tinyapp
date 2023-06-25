@@ -15,9 +15,12 @@
           Tiny URL ID:
           <a class="nav_item nav-link" href="/u/<%= id %>"><%= id %></a>
         </p>
+      </div>
+      <div class="card-footer text-muted">
+        <h4>Edit:</h4>
         <form class="form" action="/urls/<%= id %>" method="POST">
           <div class="form-group mb-2">
-            <label for="longURL">Update URL:</label>
+            <label for="longURL">New URL:</label>
             <input
               class="form-center"
               type="text"
@@ -29,7 +32,6 @@
           </div>
         </form>
       </div>
-      <div class="card-footer text-muted"></div>
     </div>
     <%- include('partials/_bootstrap_js') %>
   </body>
