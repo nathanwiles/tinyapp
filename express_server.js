@@ -62,7 +62,8 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  res.redirect(`${urlDatabase[req.params.id]}`)
+  longURL = urlDatabase[req.params.id];
+  res.redirect(longURL);
 });
 
 // Post requests
