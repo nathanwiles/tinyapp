@@ -16,7 +16,7 @@ const urlDatabase = {
 };
 
 // generate random string function
-const generateTinyURL = function() {
+const generateTinyURL = function () {
   let tinyURL = "";
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -54,11 +54,15 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = {
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id],
-  };
-  res.render("urls_show", templateVars);
+  if (!urlDatabase[req.params.id]) {
+    res.status(404).send("Tiny URL does not exist");
+  } else {
+    const templateVars = {
+      id: req.params.id,
+      longURL: urlDatabase[req.params.id],
+    };
+    res.render("urls_show", templateVars);
+  }
 });
 
 app.get("/u/:id", (req, res) => {
@@ -71,8 +75,8 @@ app.post("/urls", (req, res) => {
   const newLongURL = req.body.longURL;
   const newTinyURL = generateTinyURL();
   urlDatabase[newTinyURL] = newLongURL;
-  
-  res.redirect(`/urls/${newTinyURL}`); 
+
+  res.redirect(`/urls/${newTinyURL}`);
 });
 
 // Listen for requests
