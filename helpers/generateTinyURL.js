@@ -1,5 +1,5 @@
 /**
- * generate random string function
+ * generate random 6 char string 
  * @returns {string} random string
  * @example
  * generateTinyURL() // => 'aBcDeF'
