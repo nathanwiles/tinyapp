@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/_head') %>
+  <title>Unlisted TinyURL</title>
+</head>
+<body>
+  <%- include('partials/_header') %>
+  <main style="margin: 1em">
+    <h1>Welcome to TinyApp!</h1>
+    <h3>What is TinyApp?</h3>
+    <p>
+      TinyApp is a web application built with <b>Node</b> and <b>Express</b> that allows users to shorten long URLs into a randomly generated 6 character id which is then saved to this server.
+    </p>
+    <h3>How do I use TinyApp?</h3>
+    <p>
+      To use TinyApp, click on the <a href="/urls">My URLs</a> tab to see what URLs you have saved to this server. If you have not saved any URLs, click on the <a href="/urls/new">Add New URL</a> tab to add a new URL to this server.
+    </p>
+  </main>
+  <%- include('partials/_bootstrap_js') %>
+</body>
+</html>
