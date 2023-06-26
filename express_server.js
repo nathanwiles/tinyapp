@@ -16,7 +16,7 @@ const databasePath = "./data/database.json";
 // Import database
 fs.readFile("./data/database.json", "utf-8", (err, data) => {
   
-  let urls = {}; //object to store User urls
+  let urls = {};
 
   if (err) {
     console.log(err);
@@ -27,7 +27,7 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
       urls = {};
     } else {
       if (data) urls = JSON.parse(data);
-      console.log("Imported Database:\n", urls);
+      console.log("Imported Database:\n");
     }
   
 
@@ -35,6 +35,7 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
     const app = express();
     const PORT = 8080; // default port 8080
     app.set("view engine", "ejs");
+    let username = null;
 
     // Middleware
     app.use(cookieParser());
@@ -43,28 +44,28 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
     // GET requests
     app.get("/urls", (req, res) => {
       const templateVars = {
-        urls,
-        username: req.cookies.username,
+        urls : urls[username],
+        username,
       };
       res.render("urls_index", templateVars);
     });
 
     app.get("/urls/new", (req, res) => {
       const templateVars = {
-        username: req.cookies["username"],
+        username,
       };
       res.render("urls_new", templateVars);
     });
 
     app.get("/", (req, res) => {
       const templateVars = {
-        username: req.cookies.username,
+        username,
       };
       res.render("tinyapp_home", templateVars);
     });
 
     app.get("/urls.json", (req, res) => {
-      res.json(urls);
+      res.json(urls.username);
     });
 
     app.get("/hello", (req, res) => {
@@ -73,20 +74,21 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
 
     app.get("/urls/:id", (req, res) => {
       const templateVars = {
-        username: req.cookies.username,
+        username,
       };
-      if (!urls[req.params.id]) {
+      const id = req.params.id;
+      if (!urls[username][id]) {
         res.status(404);
         res.render("urls_404", templateVars);
       } else {
-        templateVars.id = req.params.id;
-        templateVars.longURL = urls[req.params.id];
+        templateVars.id = id;
+        templateVars.longURL = urls[username][id];
       }
       res.render("urls_show", templateVars);
     });
 
     app.get("/u/:id", (req, res) => {
-      longURL = urls[req.params.id];
+      longURL = urls[username][req.params.id];
       res.redirect(longURL);
     });
 
@@ -95,8 +97,7 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
       const submittedLongURL = req.body.longURL;
       const newLongURL = formatLongURL(submittedLongURL);
       const newTinyURL = generateTinyURL();
-
-      urls[newTinyURL] = newLongURL;
+      urls[username][newTinyURL] = newLongURL;
 
       console.log(`Received new tinyURL, saving database...`);
 
@@ -106,21 +107,25 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
     });
 
     app.post("/login", (req, res) => {
-      const username = req.body.username;
+      username = req.body.username;
+      if (!urls[username]) {
+        urls[username] = {};
+      }
+     
       res.cookie("username", username);
       res.redirect("/urls");
     });
 
     app.post("/logout", (req, res) => {
       res.clearCookie("username");
+      username = null;
       res.redirect("/");
     });
 
     app.post("/urls/:id/delete", (req, res) => {
       const id = req.params.id;
-      delete urls[id];
+      delete urls[username][id];
       console.log(`Deleted ${id} from database...`);
-      if (urls === undefined) urls = {};
       saveDatabase(databasePath, urls);
       res.redirect("/urls");
     });
@@ -129,8 +134,10 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
       const id = req.params.id;
       const submittedLongURL = req.body.longURL;
       const newLongURL = formatLongURL(submittedLongURL);
-      urls[id] = newLongURL;
-      console.log(`Updated ${id} in database...`);
+      
+      
+      urls[username][id] = newLongURL;
+      console.log(`Updated ${id} in ${username}'s database...`);
       saveDatabase(databasePath, urls);
       res.redirect("/urls");
     });
