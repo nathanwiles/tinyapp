@@ -111,6 +111,11 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
       res.redirect("/urls");
     });
 
+    app.post("/logout", (req, res) => {
+      res.clearCookie("username");
+      res.redirect("/");
+    });
+
     app.post("/urls/:id/delete", (req, res) => {
       const id = req.params.id;
       delete urls[id];
