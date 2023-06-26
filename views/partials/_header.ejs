@@ -22,7 +22,12 @@
     <% if(username) { %>
     <div class="navbar-nav">
       <div class="nav_item nav-link">Logged in as <%= username %></div>
-      <a class="btn btn-primary" href="/logout">Logout</a>
+      <form
+      class="form-inline justify-content-right"
+      action="/logout"
+      method="POST">
+      <button type="submit" class = "btn btn-primary">Logout</a></form>
+    
     </div>
     <% } else { %>
     <form
