@@ -6,6 +6,7 @@
  */
 const express = require("express");
 const fs = require("fs");
+const cookieParser = require("cookie-parser");
 
 const formatLongURL = require("./helpers/formatLongURL");
 const generateTinyURL = require("./helpers/generateTinyURL");
@@ -13,97 +14,137 @@ const saveDatabase = require("./helpers/saveDatabase");
 const databasePath = "./data/database.json";
 
 // Import database
-fs.readFile("./data/database.json", (err, data) => {
-  if (err) console.log(err);
+fs.readFile("./data/database.json", "utf-8", (err, data) => {
+  
+  let urls = {};
 
-  // if no error, assign parsed data and log it
-  const urlDatabase = JSON.parse(data);
-  console.log("Imported Database:\n", urlDatabase);
-
-  // Setup server
-  const app = express();
-  const PORT = 8080; // default port 8080
-  app.set("view engine", "ejs");
-
-  // Middleware
-  app.use(express.urlencoded({ extended: true }));
-
-  // GET requests
-  app.get("/urls", (req, res) => {
-    const templateVars = { urls: urlDatabase };
-    res.render("urls_index", templateVars);
-  });
-
-  app.get("/urls/new", (req, res) => {
-    res.render("urls_new");
-  });
-
-  app.get("/", (req, res) => {
-    res.render("tinyapp_home");
-  });
-
-  app.get("/urls.json", (req, res) => {
-    res.json(urlDatabase);
-  });
-
-  app.get("/hello", (req, res) => {
-    res.send("<html<body>Hello <b>World</b></body></html>\n");
-  });
-
-  app.get("/urls/:id", (req, res) => {
-    if (!urlDatabase[req.params.id]) {
-      res.status(404);
-      res.render("urls_404");
+  if (err) {
+    console.log(err);
+  } else {
+    // if no error, assign parsed data and log it
+    if (!data) {
+      console.log("Source File Empty!\n");
+      urls = {};
     } else {
-      const templateVars = {
-        id: req.params.id,
-        longURL: urlDatabase[req.params.id],
-      };
-      res.render("urls_show", templateVars);
+      if (data) urls = JSON.parse(data);
+      console.log("Imported Database:\n");
     }
-  });
+  
 
-  app.get("/u/:id", (req, res) => {
-    longURL = urlDatabase[req.params.id];
-    res.redirect(longURL);
-  });
+    // Setup server
+    const app = express();
+    const PORT = 8080; // default port 8080
+    app.set("view engine", "ejs");
+    let username = null;
 
-  // Post requests
-  app.post("/urls", (req, res) => {
-    const submittedLongURL = req.body.longURL;
-    const newLongURL = formatLongURL(submittedLongURL);
-    const newTinyURL = generateTinyURL();
+    // Middleware
+    app.use(cookieParser());
+    app.use(express.urlencoded({ extended: true }));
 
-    urlDatabase[newTinyURL] = newLongURL;
+    // GET requests
+    app.get("/urls", (req, res) => {
+      const templateVars = {
+        urls : urls[username],
+        username,
+      };
+      res.render("urls_index", templateVars);
+    });
 
-    console.log(`Received new tinyURL, saving database...`);
+    app.get("/urls/new", (req, res) => {
+      const templateVars = {
+        username,
+      };
+      res.render("urls_new", templateVars);
+    });
 
-    saveDatabase(databasePath, urlDatabase);
+    app.get("/", (req, res) => {
+      const templateVars = {
+        username,
+      };
+      res.render("tinyapp_home", templateVars);
+    });
 
-    res.redirect(`/urls/${newTinyURL}`);
-  });
+    app.get("/urls.json", (req, res) => {
+      res.json(urls.username);
+    });
 
-  app.post("/urls/:id/delete", (req, res) => {
-    const id = req.params.id;
-    delete urlDatabase[id];
-    console.log(`Deleted ${id} from database...`);
-    saveDatabase(databasePath, urlDatabase);
-    res.redirect("/urls");
-  });
+    app.get("/hello", (req, res) => {
+      res.send("<html<body>Hello <b>World</b></body></html>\n");
+    });
 
-  app.post("/urls/:id", (req, res) => {
-    const id = req.params.id;
-    const submittedLongURL = req.body.longURL;
-    const newLongURL = formatLongURL(submittedLongURL);
-    urlDatabase[id] = newLongURL;
-    console.log(`Updated ${id} in database...`);
-    saveDatabase(databasePath, urlDatabase);
-    res.redirect("/urls");
-  });
+    app.get("/urls/:id", (req, res) => {
+      const templateVars = {
+        username,
+      };
+      const id = req.params.id;
+      if (!urls[username][id]) {
+        res.status(404);
+        res.render("urls_404", templateVars);
+      } else {
+        templateVars.id = id;
+        templateVars.longURL = urls[username][id];
+      }
+      res.render("urls_show", templateVars);
+    });
 
+    app.get("/u/:id", (req, res) => {
+      longURL = urls[username][req.params.id];
+      res.redirect(longURL);
+    });
 
-  // Listen for requests
-  app.listen(PORT, () => {
-    console.log(`tinyapp listening on port ${PORT}!`);
-  });
+    // Post requests
+    app.post("/urls", (req, res) => {
+      const submittedLongURL = req.body.longURL;
+      const newLongURL = formatLongURL(submittedLongURL);
+      const newTinyURL = generateTinyURL();
+      urls[username][newTinyURL] = newLongURL;
+
+      console.log(`Received new tinyURL, saving database...`);
+
+      saveDatabase(databasePath, urls);
+
+      res.redirect(`/urls/${newTinyURL}`);
+    });
+
+    app.post("/login", (req, res) => {
+      username = req.body.username;
+      if (!urls[username]) {
+        urls[username] = {};
+      }
+     
+      res.cookie("username", username);
+      res.redirect("/urls");
+    });
+
+    app.post("/logout", (req, res) => {
+      res.clearCookie("username");
+      username = null;
+      res.redirect("/");
+    });
+
+    app.post("/urls/:id/delete", (req, res) => {
+      const id = req.params.id;
+      delete urls[username][id];
+      console.log(`Deleted ${id} from database...`);
+      saveDatabase(databasePath, urls);
+      res.redirect("/urls");
+    });
+
+    app.post("/urls/:id", (req, res) => {
+      const id = req.params.id;
+      const submittedLongURL = req.body.longURL;
+      const newLongURL = formatLongURL(submittedLongURL);
+      
+      
+      urls[username][id] = newLongURL;
+      console.log(`Updated ${id} in ${username}'s database...`);
+      saveDatabase(databasePath, urls);
+      res.redirect("/urls");
+    });
+
+    // Listen for requests
+    app.listen(PORT, () => {
+      console.log(`tinyapp listening on port ${PORT}!`);
+    });
+  }
 });
