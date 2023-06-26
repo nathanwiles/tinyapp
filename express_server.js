@@ -44,7 +44,7 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
     app.get("/urls", (req, res) => {
       const templateVars = {
         urls,
-        username: req.cookies["username"],
+        username: req.cookies.username,
       };
       res.render("urls_index", templateVars);
     });
@@ -58,9 +58,9 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
 
     app.get("/", (req, res) => {
       const templateVars = {
-        username: req.cookies["username"],
+        username: req.cookies.username,
       };
-      res.render("tinyapp_home");
+      res.render("tinyapp_home", templateVars);
     });
 
     app.get("/urls.json", (req, res) => {
@@ -73,7 +73,7 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
 
     app.get("/urls/:id", (req, res) => {
       const templateVars = {
-        username: req.cookies["username"],
+        username: req.cookies.username,
       };
       if (!urls[req.params.id]) {
         res.status(404);
@@ -106,7 +106,7 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
     });
 
     app.post("/login", (req, res) => {
-      username = req.body.username;
+      const username = req.body.username;
       res.cookie("username", username);
       res.redirect("/urls");
     });
