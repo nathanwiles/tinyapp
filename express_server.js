@@ -8,14 +8,17 @@ const express = require("express");
 const fs = require("fs");
 const cookieParser = require("cookie-parser");
 
-const formatLongURL = require("./helpers/formatLongURL");
-const generateTinyURL = require("./helpers/generateTinyURL");
-const saveDatabase = require("./helpers/saveDatabase");
+
+const {
+  formatLongURL,
+  generateTinyURL,
+  saveDatabase,
+} = require("./helpers/index");
+
 const databasePath = "./data/database.json";
 
 // Import database
 fs.readFile("./data/database.json", "utf-8", (err, data) => {
-  
   let urls = {};
 
   if (err) {
@@ -29,7 +32,6 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
       if (data) urls = JSON.parse(data);
       console.log("Imported Database:\n");
     }
-  
 
     // Setup server
     const app = express();
@@ -44,7 +46,7 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
     // GET requests
     app.get("/urls", (req, res) => {
       const templateVars = {
-        urls : urls[username],
+        urls: urls[username],
         username,
       };
       res.render("urls_index", templateVars);
@@ -111,7 +113,7 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
       if (!urls[username]) {
         urls[username] = {};
       }
-     
+
       res.cookie("username", username);
       res.redirect("/urls");
     });
@@ -134,8 +136,7 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
       const id = req.params.id;
       const submittedLongURL = req.body.longURL;
       const newLongURL = formatLongURL(submittedLongURL);
-      
-      
+
       urls[username][id] = newLongURL;
       console.log(`Updated ${id} in ${username}'s database...`);
       saveDatabase(databasePath, urls);
