@@ -1,42 +1,50 @@
 /**
- * Formats the longURL to include http://www. if it is not included.
- * 
- * @param {*} rawlongURL 
+ * Formats the longURL to include http(s)://www. if it is not included.
+ * also works if submittedLongURL already contains "http(s)", "www.", or //
+ * @param {*} submittedLongURL
+ *
  * @returns  {string} formattedLongURL
+ *
  */
 
 const formatLongURL = (longURL) => {
-  
-  const HTTPprefix = "http://www";
-  const HTTPSprefix = "https://www";
+  /**
+   * checks if the string contains https
+   *
+   * @param {string}
+   * @returns {string} HTTP://www. or HTTPS://www.
+   */
+  const protocolAndTLD = (string = '') => {
+    const HTTP = "http://www";
+    const HTTPS = "https://www";
+    string.includes("https") ? HTTPS : HTTP;
+  };
 
-  let splitLongURL = longURL.split(".");
-  
-  let firstElement = splitLongURL[0];
-  
-  // check if the first element contains http or www
-  if (
-    firstElement.includes("www") &&
-    splitLongURL.length  > 2
-    ) {
+  const splitLongURL = longURL.split(".");
+  let firstSubstring = splitLongURL[0];
+  let urlPrefix = protocolAndTLD(firstSubstring);
 
-    firstElement = firstElement.includes("https") ? HTTPSprefix : HTTPprefix;
-    splitLongURL[0] = firstElement;
+  if (firstSubstring.includes("www") && splitLongURL.length > 2) {
 
-  } else if (firstElement.includes("//")) {
+    splitLongURL[0] = urlPrefix;
 
-    splitFirstElement = firstElement.split("//");
+  } else if (firstSubstring.includes("//")) {
 
-    splitFirstElement[0] = splitFirstElement[0].includes("https") ? HTTPSprefix : HTTPprefix;
-    firstElement = splitFirstElement.join(".");
+    splitFirstSubstring = firstSubstring.split("//");
+    
+    splitLongURL.shift;
+    splitLongURL.unshift(splitFirstSubstring[2])
+    
+    firstSubstring = splitFirstSubstring.join(".");
 
-    splitLongURL[0] = firstElement;
+    splitLongURL[0] = firstSubstring;
+
   } else {
-    splitLongURL.unshift(HTTPprefix);
+    splitLongURL.unshift(urlprefix);
   }
 
   const newLongURL = splitLongURL.join(".");
   return newLongURL;
-}
+};
 
 module.exports = formatLongURL;
