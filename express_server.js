@@ -11,7 +11,6 @@ const cookieParser = require("cookie-parser");
 
 const {
   formatLongURL,
-  generateTinyURL,
   generateRandomString,
   saveDatabase,
 } = require("./helpers/index");
@@ -21,7 +20,7 @@ const databasePath = "./data/database.json";
 
 class User {
   constructor(username, password) {
-    id = generateRandomString();
+    id = generateRandomString(10);
     this.username = username;
     this.password = password;
 
@@ -129,7 +128,7 @@ app.get("/u/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   const submittedLongURL = req.body.longURL;
   const newLongURL = formatLongURL(submittedLongURL);
-  const newTinyURL = generateTinyURL();
+  const newTinyURL = generateRandomString(6);
   urls[username][newTinyURL] = newLongURL;
 
   console.log(`Received new tinyURL, saving database...`);
