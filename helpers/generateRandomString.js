@@ -14,3 +14,5 @@ const generateRandomString = function (length) {
   }
   return string;
 }
+
+module.exports = generateRandomString;
