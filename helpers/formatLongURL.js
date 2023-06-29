@@ -1,4 +1,17 @@
 /**
+ * checks if the string contains https
+ *
+ * @param {string}
+ * @returns {string} HTTP://www. or HTTPS://www.
+ */
+const protocolAndTLD = (string = '') => {
+  const HTTP = "http://www";
+  const HTTPS = "https://www";
+  return (string.includes("https") ? HTTPS : HTTP);
+};
+
+
+/**
  * Formats the longURL to include http(s)://www. if it is not included.
  * also works if submittedLongURL already contains "http(s)", "www.", or //
  * @param {*} submittedLongURL
@@ -8,17 +21,8 @@
  */
 
 const formatLongURL = (longURL) => {
-  /**
-   * checks if the string contains https
-   *
-   * @param {string}
-   * @returns {string} HTTP://www. or HTTPS://www.
-   */
-  const protocolAndTLD = (string = '') => {
-    const HTTP = "http://www";
-    const HTTPS = "https://www";
-    string.includes("https") ? HTTPS : HTTP;
-  };
+  
+  
 
   const splitLongURL = longURL.split(".");
   let firstSubstring = splitLongURL[0];
@@ -32,15 +36,15 @@ const formatLongURL = (longURL) => {
 
     splitFirstSubstring = firstSubstring.split("//");
     
-    splitLongURL.shift;
-    splitLongURL.unshift(splitFirstSubstring[2])
+    splitFirstSubstring.shift();
+    splitFirstSubstring.unshift(urlPrefix)
     
-    firstSubstring = splitFirstSubstring.join(".");
+   formattedSubstring = splitFirstSubstring.join(".");
 
-    splitLongURL[0] = firstSubstring;
+    splitLongURL[0] = formattedSubstring;
 
   } else {
-    splitLongURL.unshift(urlprefix);
+    splitLongURL.unshift(urlPrefix);
   }
 
   const newLongURL = splitLongURL.join(".");
