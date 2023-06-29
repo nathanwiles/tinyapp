@@ -5,9 +5,11 @@
 const formatLongURL = require('./formatLongURL');
 const generateTinyURL = require('./generateTinyURL');
 const saveDatabase = require('./saveDatabase');
+const generateRandomString = require('./generateRandomString');
 
 module.exports = {
   formatLongURL,
   generateTinyURL,
   saveDatabase,
+  generateRandomString
 };
