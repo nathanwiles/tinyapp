@@ -44,6 +44,13 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
     app.use(express.urlencoded({ extended: true }));
     
     // GET requests
+    app.get("/register", (req, res) => {
+      const templateVars = {
+        username,
+      };
+      res.render("user_register", templateVars);
+    });
+
     app.get("/urls", (req, res) => {
       const templateVars = {
         urls: (username !== null) ? urls[username] : null,
