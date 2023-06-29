@@ -38,15 +38,15 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
     const PORT = 8080; // default port 8080
     app.set("view engine", "ejs");
     let username = null;
-
+    
     // Middleware
     app.use(cookieParser());
     app.use(express.urlencoded({ extended: true }));
-
+    
     // GET requests
     app.get("/urls", (req, res) => {
       const templateVars = {
-        urls: urls[username],
+        urls: (username !== null) ? urls[username] : null,
         username,
       };
       res.render("urls_index", templateVars);
@@ -136,7 +136,7 @@ fs.readFile("./data/database.json", "utf-8", (err, data) => {
       const id = req.params.id;
       const submittedLongURL = req.body.longURL;
       const newLongURL = formatLongURL(submittedLongURL);
-
+      (urls[username] ? urls[username] : urls[username] = {}); // if user doesn't exist, create them-
       urls[username][id] = newLongURL;
       console.log(`Updated ${id} in ${username}'s database...`);
       saveDatabase(databasePath, urls);
