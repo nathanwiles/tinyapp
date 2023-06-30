@@ -3,12 +3,13 @@
  */
 
 const formatLongURL = require('./formatLongURL');
-
+const userExists = require('./userExists');
 const saveDatabase = require('./saveDatabase');
 const generateRandomString = require('./generateRandomString');
 
 module.exports = {
   formatLongURL,
   saveDatabase,
-  generateRandomString
+  generateRandomString,
+  userExists
 };
