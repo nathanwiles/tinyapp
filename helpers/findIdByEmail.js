@@ -5,7 +5,7 @@
  * @returns {boolean || string} userID if email exists in userDatabase, false otherwise
  */
 
-const userExists = (email, userDatabase) => {
+const findIdByEmail = (email, userDatabase) => {
   for (const user in userDatabase) {
     if (userDatabase[user].email === email) {
       return userDatabase[user].id;
@@ -14,4 +14,4 @@ const userExists = (email, userDatabase) => {
   return false;
 };
 
-module.exports = userExists;
+module.exports = findIdByEmail;

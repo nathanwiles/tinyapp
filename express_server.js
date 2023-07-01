@@ -12,7 +12,7 @@ const {
   formatLongURL,
   generateRandomString,
   saveDatabase,
-  userExists,
+  findIdByEmail,
 } = require("./helpers/index");
 
 const urlDatabasePath = "./data/database.json";
@@ -158,7 +158,7 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   const newUser = new User(email, password);
 
-  if (userExists(email, users)) {
+  if (findIdByEmail(email, users)) {
     res.status(400);
     res.send("400 Bad Request: Email already registered");
   } else {
@@ -172,7 +172,7 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   loginEmail = req.body.email;
   password = req.body.password;
-  let userId = userExists(loginEmail, users);
+  let userId = findIdByEmail(loginEmail, users);
   if (userId && users[userId].password === password) {
     email = loginEmail;
     res.cookie("email", email);
