@@ -123,7 +123,11 @@ router.get("/urls/:urlId", (req, res) => {
       longURL: urlId ? urls[urlId].longURL : null,
       email,
     };
-    if (!urls[urlId]) {
+    if (urls[urlId].userId !== userId) {
+      res.status(401);
+      res.render("urls_error", {email, error : "You do not have permission to view or edit this URL"});
+    }
+      if (!urls[urlId]) {
       res.status(404);
       res.render("urls_error", {email, error : `URL: ${urlId} not found`});
     }
