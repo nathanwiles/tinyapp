@@ -112,7 +112,7 @@ router.get("/hello", (req, res) => {
 });
 
 router.get("/urls/:urlId", (req, res) => {
-  if ((userId = null)) {
+  if ((!userId )) {
     res.status(401).render("urls_error", {
       email: false,
       error: "Please login to view and edit URLs",
