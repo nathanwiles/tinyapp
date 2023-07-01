@@ -6,7 +6,6 @@ const fs = require("fs");
  * @description: This function reads a JSON file and returns a promise to parse the data
  * @returns  {Promise} returns parsedData on success.
  */
-
 function readDatabase(filePath) {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, "utf-8", (err, data) => {
@@ -20,6 +19,14 @@ function readDatabase(filePath) {
   });
 }
 
+
+/**
+ * 
+ * @param {*} filePath 
+ * @param {*} data 
+ * @description: This function returns a promise to write data to a JSON file.
+ * @returns {Promise} returns nothing on success.
+ */
 function saveDatabase(filePath, data) {
   return new Promise((resolve, reject) => {
     const stringData = JSON.stringify(data, null, 2);
