@@ -15,7 +15,7 @@ const {
   findIdByEmail,
   findUrlsByUserId,
 } = require("./helpers/index");
-const { get } = require("http");
+
 
 const urlDatabasePath = "./data/database.json";
 const userDatabasePath = "./data/user_data.json";
@@ -106,21 +106,20 @@ app.get("/urls", (req, res) => {
   if (!userId) {
     res.render("urls_index_all", templateVars);
   } else {
-
-    
     res.render("urls_index", templateVars);
   }
-  
 });
 
 app.get("/urls/new", (req, res) => {
-  if (!req.cookies.user_id) {
-    res.redirect("/login");
-  }
   const templateVars = {
     email: userId ? users[userId].email : null,
   };
-  res.render("urls_new", templateVars);
+
+  if (!req.cookies.user_id) {
+    res.redirect("/login");
+  } else {
+    res.render("urls_new", templateVars);
+  }
 });
 
 app.get("/", (req, res) => {
