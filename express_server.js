@@ -79,7 +79,7 @@ app.get("/register", (req, res) => {
     res.redirect("/urls");
   }
   const templateVars = {
-    email : null,
+    email: null,
   };
   res.render("user_register", templateVars);
 });
@@ -89,17 +89,22 @@ app.get("/login", (req, res) => {
     res.redirect("/urls");
   }
   const templateVars = {
-    email : null,
+    email: null,
   };
   res.render("user_login", templateVars);
 });
 
 app.get("/urls", (req, res) => {
   const templateVars = {
-    email : (userId) ? users[userId].email : null,
-    urls: (userId) ? urls[userId] : null,
+    email: userId ? users[userId].email : null,
+    urls: userId ? urls[userId] : urls,
   };
-  res.render("urls_index", templateVars);
+  if (!userId) {
+    res.render("urls_index_all", templateVars);
+  } else {
+    res.render("urls_index", templateVars);
+  }
+  
 });
 
 app.get("/urls/new", (req, res) => {
@@ -107,21 +112,21 @@ app.get("/urls/new", (req, res) => {
     res.redirect("/login");
   }
   const templateVars = {
-    email : (userId) ? users[userId].email : null,
+    email: userId ? users[userId].email : null,
   };
   res.render("urls_new", templateVars);
 });
 
 app.get("/", (req, res) => {
   const templateVars = {
-    email : (userId) ? users[userId].email : null,
+    email: userId ? users[userId].email : null,
   };
   res.render("tinyapp_home", templateVars);
 });
 
 app.get("/urls.json", (req, res) => {
   if (userId) {
-  res.json(urls[userId]);
+    res.json(urls[userId]);
   } else {
     res.json(urls);
   }
@@ -132,7 +137,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:urlId", (req, res) => {
-  let email = users[userId].email;
+  let email = req.cookies.user_id ? users[userId].email : null;
   const templateVars = {
     email,
   };
@@ -148,13 +153,22 @@ app.get("/urls/:urlId", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  longURL = urls[userId][req.params.id];
-  res.redirect(longURL);
+  const urlId = req.params.id;
+  for (const user in urls) {
+    if (urls[user][urlId]) {
+      const longURL = urls[user][urlId];
+      res.redirect(longURL);
+    }
+  }
+  templateVars = {
+    email: userId ? users[userId].email : null,
+  };
+  res.status(404);
+  res.render("urls_404", templateVars);
 });
 
 // Post requests
 app.post("/urls", (req, res) => {
-  
   const submittedLongURL = req.body.longURL;
   const newLongURL = formatLongURL(submittedLongURL);
   const newTinyURL = generateRandomString(6);
