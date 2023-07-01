@@ -75,15 +75,21 @@ app.use((req, res, next) => {
 
 // GET requests
 app.get("/register", (req, res) => {
+  if (userId) {
+    res.redirect("/urls");
+  }
   const templateVars = {
-    email : (userId) ? users[userId].email : null,
+    email : null,
   };
   res.render("user_register", templateVars);
 });
 
 app.get("/login", (req, res) => {
+  if (userId) {
+    res.redirect("/urls");
+  }
   const templateVars = {
-    email : (userId) ? users[userId].email : null,
+    email : null,
   };
   res.render("user_login", templateVars);
 });
