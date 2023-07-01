@@ -14,6 +14,7 @@ const {
   saveDatabase,
   findIdByEmail,
   findUrlsByUserId,
+  findEmailByUserId,
 } = require("./helpers/index");
 
 const urlDatabasePath = "./data/database.json";
@@ -79,26 +80,21 @@ app.get("/register", (req, res) => {
   if (userId) {
     res.redirect("/urls");
   }
-  const templateVars = {
-    email: null,
-  };
-  res.render("user_register", templateVars);
+  res.render("user_register", {email :findEmailByUserId(userId, users)});
 });
 
 app.get("/login", (req, res) => {
   if (userId) {
     res.redirect("/urls");
   }
-  const templateVars = {
-    email: null,
-  };
-  res.render("user_login", templateVars);
+  
+  res.render("user_login", {email :findEmailByUserId(userId, users)});
 });
 
 app.get("/urls", (req, res) => {
   const templateVars = {
     userId,
-    email: userId ? users[userId].email : null,
+    email: findEmailByUserId(userId, users),
     userUrls: findUrlsByUserId(userId, urls),
   };
   if (!userId) {
@@ -109,22 +105,16 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {
-    email: userId ? users[userId].email : null,
-  };
 
-  if (!req.cookies.user_id) {
+  if (!userId) {
     res.redirect("/login");
   } else {
-    res.render("urls_new", templateVars);
+    res.render("urls_new", {email :findEmailByUserId(userId, users)});
   }
 });
 
 app.get("/", (req, res) => {
-  const templateVars = {
-    email: userId ? users[userId].email : null,
-  };
-  res.render("tinyapp_home", templateVars);
+  res.render("tinyapp_home", {email :findEmailByUserId(userId, users)});
 });
 
 app.get("/urls.json", (req, res) => {
@@ -132,7 +122,7 @@ app.get("/urls.json", (req, res) => {
     res.json(getUrlsByUser(userId, urls));
   } else {
     res.status(401);
-    res.send("Please login to view your URLs");
+    res.render("urls_error", {email : false, error : "Please login to view and edit URLs"})
   }
 });
 
@@ -141,23 +131,22 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:urlId", (req, res) => {
-  if (!req.cookies.user_id) {
+  if (!userId) {
     res.status(401);
-    res.send("Please login to view your URLs");
+    res.render("urls_error", {email : false, error : "Please login to view and edit URLs"});
   } else {
     const urlId = req.params.urlId;
-    const userId = req.cookies.user_id;
-    const email = users[userId].email;
+    const email = findEmailByUserId(userId, users);
     const templateVars = {
-      urlId,
+      urlId : req.params.urlId,
       longURL: urlId ? urls[urlId].longURL : null,
       email,
     };
     if (!urls[urlId]) {
       res.status(404);
-      res.render("urls_404", templateVars);
+      res.render("urls_error", {email, error : `URL: ${urlId} not found`});
     }
-    
+
     res.render("urls_show", templateVars);
   }
 });
@@ -170,11 +159,8 @@ app.get("/u/:id", (req, res) => {
     res.redirect(longURL);
   }
 
-  templateVars = {
-    email: userId ? users[userId].email : null,
-  };
   res.status(404);
-  res.render("urls_404", templateVars);
+  res.render("urls_error", {email : findEmailByUserId(userId, users), error : "URL not found"});
 });
 
 // Post requests
@@ -241,12 +227,12 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  if (!req.cookies.user_id) {
+  if (!userId) {
     res.status(401);
     res.send("You must be logged in to edit URLs");
   }
   const urlId = req.params.id;
-  const userId = req.cookies.user_id;
+  const userId = userId;
   const submittedLongURL = req.body.longURL;
   const newLongURL = formatLongURL(submittedLongURL);
   urls[urlId].longURL = newLongURL;
