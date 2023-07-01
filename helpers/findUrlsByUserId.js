@@ -14,7 +14,6 @@ const findUrlsByUserId = (id, urlDatabase) => {
   for (const url in urlDatabase) {
     if (urlDatabase[url].userId === id) {
       urls[url] = urlDatabase[url];
-      console.log(url);
     }
   }
   return urls;

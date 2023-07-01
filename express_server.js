@@ -16,7 +16,6 @@ const {
   findUrlsByUserId,
 } = require("./helpers/index");
 
-
 const urlDatabasePath = "./data/database.json";
 const userDatabasePath = "./data/user_data.json";
 class User {
@@ -100,11 +99,10 @@ app.get("/urls", (req, res) => {
   const templateVars = {
     userId,
     email: userId ? users[userId].email : null,
-    urls,
     userUrls: findUrlsByUserId(userId, urls),
   };
   if (!userId) {
-    res.render("urls_index_all", templateVars);
+    res.redirect("/login");
   } else {
     res.render("urls_index", templateVars);
   }
@@ -133,7 +131,8 @@ app.get("/urls.json", (req, res) => {
   if (userId) {
     res.json(getUrlsByUser(userId, urls));
   } else {
-    res.json(urls);
+    res.status(401);
+    res.send("Please login to view your URLs");
   }
 });
 
@@ -142,19 +141,25 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls/:urlId", (req, res) => {
-  let email = req.cookies.user_id ? users[userId].email : null;
-  const templateVars = {
-    email,
-  };
-  const urlId = req.params.urlId;
-  if (!urls[urlId]) {
-    res.status(404);
-    res.render("urls_404", templateVars);
+  if (!req.cookies.user_id) {
+    res.status(401);
+    res.send("Please login to view your URLs");
   } else {
-    templateVars.urlId = urlId;
-    templateVars.longURL = urls[urlId].longURL;
+    const urlId = req.params.urlId;
+    const userId = req.cookies.user_id;
+    const email = users[userId].email;
+    const templateVars = {
+      urlId,
+      longURL: urlId ? urls[urlId].longURL : null,
+      email,
+    };
+    if (!urls[urlId]) {
+      res.status(404);
+      res.render("urls_404", templateVars);
+    }
+    
+    res.render("urls_show", templateVars);
   }
-  res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
@@ -237,13 +242,16 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/urls/:id", (req, res) => {
   if (!req.cookies.user_id) {
+    res.status(401);
     res.send("You must be logged in to edit URLs");
   }
-  const id = req.params.id;
+  const urlId = req.params.id;
+  const userId = req.cookies.user_id;
   const submittedLongURL = req.body.longURL;
   const newLongURL = formatLongURL(submittedLongURL);
-  urls[id] = newLongURL;
-  console.log(`Updated ${id} in ${userId}'s database...`);
+  urls[urlId].longURL = newLongURL;
+  urls[urlId].userId = userId;
+  console.log(`Updated ${urlId} in ${userId}'s database...`);
   saveDatabase(urlDatabasePath, urls);
   res.redirect("/urls");
 });

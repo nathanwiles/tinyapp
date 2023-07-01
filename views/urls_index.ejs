@@ -22,7 +22,7 @@
           <% for (const urlId in userUrls) { %> 
               <tr>
                 <td><%= urlId %></td>
-                <td><%= urls[urlId].longURL %></td>
+                <td><%= userUrls[urlId].longURL %></td>
                 <td>
                   <a class="btn btn-primary" href="/urls/<%= urlId %>">Edit</a>
                 </td>
