@@ -103,6 +103,9 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  if (!req.cookies.user_id) {
+    res.redirect("/login");
+  }
   const templateVars = {
     email : (userId) ? users[userId].email : null,
   };
@@ -213,6 +216,9 @@ app.post("/urls/:id/delete", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
+  if (!req.cookies.user_id) {
+    res.send("You must be logged in to edit URLs");
+  }
   const id = req.params.id;
   const submittedLongURL = req.body.longURL;
   const newLongURL = formatLongURL(submittedLongURL);
