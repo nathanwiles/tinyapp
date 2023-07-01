@@ -30,29 +30,10 @@
     
     </div>
     <% } else { %>
-    <form
-      class="form-inline justify-content-right"
-      action="/login"
-      method="POST"
-    >
-      <input
-        class="text-muted text-center"
-        type="email"
-        name="email"
-        placeholder="Email"
-        style="width: 150px; margin: 1em"
-      />
-
-      <input
-        class="text-muted text-center"
-        type="password"
-        name="password"
-        placeholder="Password"
-        style="width: 150px; margin: 1em"
-      />
-
-      <button type="submit" class="btn btn-primary">Login</button>
-    </form>
+      <div class="navbar-nav justify-content-right"></div> 
+        <a type="button" class="btn btn-primary" style="margin-right: 10px;" href="/register">Register</a>
+        <a type="button" class="btn btn-primary" href="/login">Login</a>
+      </div>
     <% } %>
   </nav>
 </header>
