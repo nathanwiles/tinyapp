@@ -59,88 +59,98 @@ fs.readFile("./data/user_data.json", "utf-8", (err, data) => {
 const app = express();
 const PORT = 8080; // default port 8080
 app.set("view engine", "ejs");
-let email = null;
+let userId;
 
 // Middleware
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
-  email = req.cookies.email;
+  if (req.cookies.user_id) {
+    userId = [req.cookies.user_id];
+  } else {
+    userId = null;
+  }
   next();
 });
 
 // GET requests
 app.get("/register", (req, res) => {
   const templateVars = {
-    email,
+    email : (userId) ? users[userId].email : null,
   };
   res.render("user_register", templateVars);
 });
 
 app.get("/login", (req, res) => {
   const templateVars = {
-    email,
+    email : (userId) ? users[userId].email : null,
   };
   res.render("user_login", templateVars);
 });
 
 app.get("/urls", (req, res) => {
   const templateVars = {
-    urls: email !== null ? urls[email] : null,
-    email,
+    email : (userId) ? users[userId].email : null,
+    urls: (userId) ? urls[userId] : null,
   };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   const templateVars = {
-    email,
+    email : (userId) ? users[userId].email : null,
   };
   res.render("urls_new", templateVars);
 });
 
 app.get("/", (req, res) => {
   const templateVars = {
-    email,
+    email : (userId) ? users[userId].email : null,
   };
   res.render("tinyapp_home", templateVars);
 });
 
 app.get("/urls.json", (req, res) => {
-  res.json(urls.email);
+  if (userId) {
+  res.json(urls[userId]);
+  } else {
+    res.json(urls);
+  }
 });
 
 app.get("/hello", (req, res) => {
   res.send("<html<body>Hello <b>World</b></body></html>\n");
 });
 
-app.get("/urls/:id", (req, res) => {
+app.get("/urls/:urlId", (req, res) => {
+  let email = users[userId].email;
   const templateVars = {
     email,
   };
-  const id = req.params.id;
-  if (!urls[email][id]) {
+  const urlId = req.params.urlId;
+  if (!urls[userId][urlId]) {
     res.status(404);
     res.render("urls_404", templateVars);
   } else {
-    templateVars.id = id;
-    templateVars.longURL = urls[email][id];
+    templateVars.urlId = urlId;
+    templateVars.longURL = urls[userId][urlId];
   }
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
-  longURL = urls[email][req.params.id];
+  longURL = urls[userId][req.params.id];
   res.redirect(longURL);
 });
 
 // Post requests
 app.post("/urls", (req, res) => {
+  
   const submittedLongURL = req.body.longURL;
   const newLongURL = formatLongURL(submittedLongURL);
   const newTinyURL = generateRandomString(6);
-  urls[email] ? urls[email] : (urls[email] = {}); // if user doesn't exist, create them-
-  urls[email][newTinyURL] = newLongURL;
+  urls[userId] ? urls[userId] : (urls[userId] = {}); // if user doesn't exist, create them-
+  urls[userId][newTinyURL] = newLongURL;
 
   console.log(`Received new tinyURL, saving database...`);
 
@@ -164,7 +174,7 @@ app.post("/register", (req, res) => {
   } else {
     users[newUser.id] = newUser;
     saveDatabase(userDatabasePath, users);
-    res.cookie("email", email);
+    res.cookie("user_id", newUser.id);
     res.redirect("/urls");
   }
 });
@@ -174,8 +184,7 @@ app.post("/login", (req, res) => {
   password = req.body.password;
   let userId = findIdByEmail(loginEmail, users);
   if (userId && users[userId].password === password) {
-    email = loginEmail;
-    res.cookie("email", email);
+    res.cookie("user_id", userId);
   } else {
     res.status(403);
     res.send("403: Invalid Username or Password");
@@ -185,14 +194,13 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("email");
-  email = null;
-  res.redirect("/");
+  res.clearCookie("user_id");
+  res.redirect("/login");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
-  delete urls[email][id];
+  delete urls[userId][id];
   console.log(`Deleted ${id} from database...`);
   saveDatabase(urlDatabasePath, urls);
   res.redirect("/urls");
@@ -202,8 +210,8 @@ app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
   const submittedLongURL = req.body.longURL;
   const newLongURL = formatLongURL(submittedLongURL);
-  urls[email][id] = newLongURL;
-  console.log(`Updated ${id} in ${email}'s database...`);
+  urls[userId][id] = newLongURL;
+  console.log(`Updated ${id} in ${userId}'s database...`);
   saveDatabase(urlDatabasePath, urls);
   res.redirect("/urls");
 });
