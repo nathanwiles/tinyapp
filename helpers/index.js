@@ -6,11 +6,12 @@ const findEmailByUserId = require('./findEmailByUserId');
 const findUrlsByUserId = require('./findUrlsByUserId');
 const formatLongURL = require('./formatLongURL');
 const findIdByEmail = require('./findIdByEmail');
-const saveDatabase = require('./saveDatabase');
+const {saveDatabase, readDatabase} = require('./databaseIO.js');
 const generateRandomString = require('./generateRandomString');
 
 module.exports = {
   formatLongURL,
+  readDatabase,
   saveDatabase,
   generateRandomString,
   findIdByEmail,
