@@ -77,6 +77,13 @@ app.get("/register", (req, res) => {
   res.render("user_register", templateVars);
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = {
+    email,
+  };
+  res.render("user_login", templateVars);
+});
+
 app.get("/urls", (req, res) => {
   const templateVars = {
     urls: email !== null ? urls[email] : null,
