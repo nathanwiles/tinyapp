@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include("partials/_head") %>
+  <title>Document</title>
+</head>
+<body>
+  <%- include("partials/_header") %>
+  <div class="container" style="padding-top: 30px;">
+    <form action="/login" method="POST">
+      <div class="form-group">
+        <h4> Log in:</h4>
+        <label for="email">Email:</label>
+        <input type="email" name="email" class="form-control">
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" name="password" class="form-control">
+        <br>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+  </div>
+</body>
+  <%- include("partials/_bootstrap_js") %>
+</html>
