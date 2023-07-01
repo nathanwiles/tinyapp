@@ -1,3 +1,4 @@
+const generateRandomString = require("./generateRandomString");
 
 module.exports = class User {
   constructor(email, password) {
