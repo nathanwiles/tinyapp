@@ -19,6 +19,7 @@ const {
   findUrlsByUserId,
   findEmailByUserId,
 } = require("./helpers/index");
+const { url } = require("inspector");
 
 // Import database
 let urls = {};
@@ -111,7 +112,7 @@ router.get("/hello", (req, res) => {
 });
 
 router.get("/urls/:urlId", (req, res) => {
-  if (!userId) {
+  if ((userId = null)) {
     res.status(401).render("urls_error", {
       email: false,
       error: "Please login to view and edit URLs",
@@ -119,21 +120,21 @@ router.get("/urls/:urlId", (req, res) => {
   } else {
     const urlId = req.params.urlId;
     const email = findEmailByUserId(userId, users);
-    const templateVars = {
-      urlId: req.params.urlId,
-      longURL: urlId ? urls[urlId].longURL : null,
-      email,
-    };
-    if (urls[urlId].userId !== userId) {
+    if (!urls[urlId]) {
+      res
+        .status(404)
+        .render("urls_error", { email, error: `URL: ${urlId} not found` });
+    } else if (urls[urlId].userId !== userId) {
       res.status(403).render("urls_error", {
         email,
         error: "You do not have permission to view or edit this URL",
       });
-    } else if (!urls[urlId]) {
-      res
-        .status(404)
-        .render("urls_error", { email, error: `URL: ${urlId} not found` });
     } else {
+      const templateVars = {
+        urlId,
+        longURL: urls[urlId].longURL,
+        email,
+      };
       res.status(200).render("urls_show", templateVars);
     }
   }
@@ -213,21 +214,29 @@ router.post("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-router.post("/urls/:id/delete", (req, res) => {
-  const id = req.params.id;
-
-  delete urls[id];
-  console.log(`Deleted ${id} from database...`);
-  saveDatabase(urlDatabasePath, urls);
-  res.redirect("/urls");
+router.post("/urls/:urlId/delete", (req, res) => {
+  const urlId = req.params.urlId;
+  if (!urls[urlId]) {
+    res.status(404).send("URL not found");
+  } else if (!userId) {
+    res.status(401).send("Please login to delete URLs");
+  } else if (urls[urlId].userId !== userId) {
+    res.status(403).send("You do not have permission to delete this URL");
+  } else {
+    delete urls[urlId];
+    console.log(`Deleted ${urlId} from database...`);
+    saveDatabase(urlDatabasePath, urls);
+    res.redirect("/urls");
+  }
 });
 
 router.post("/urls/:id", (req, res) => {
-  if (!userId) {
-    res.status(401).render("urls_error", {
-      email: false,
-      error: "Please login to view and edit URLs",
-    });
+  if (!urls[req.params.id]) {
+    res.status(404).send("URL not found");
+  } else if (!userId) {
+    res.status(401).send("Please login to edit URLs");
+  } else if (urls[req.params.id].userId !== userId) {
+    res.status(403).send("You do not have permission to edit this URL");
   } else {
     const urlId = req.params.id;
     const userId = userId;
