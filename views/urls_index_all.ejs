@@ -17,13 +17,13 @@
         </thead>
 
         <tbody>
-          <% for (const user in urls) { %> 
-            <% for (const id in urls[user]) { %>
+          <% for (const urlId in urls) { %> 
+          
           <tr>
-            <td><%= id %></td>
-            <td><%= urls[user][id] %></td>
+            <td><%= urlId %></td>
+            <td><%= urls[urlId].longURL %></td>
           </tr>
-          <% } %> <% } %>
+          <% } %>
         </tbody>
       </table>
       <a class="btn btn-primary" href="/urls/new">Add New URL</a>

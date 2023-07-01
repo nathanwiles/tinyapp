@@ -13,7 +13,9 @@ const {
   generateRandomString,
   saveDatabase,
   findIdByEmail,
+  findUrlsByUserId,
 } = require("./helpers/index");
+const { get } = require("http");
 
 const urlDatabasePath = "./data/database.json";
 const userDatabasePath = "./data/user_data.json";
@@ -66,7 +68,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   if (req.cookies.user_id) {
-    userId = [req.cookies.user_id];
+    userId = req.cookies.user_id;
   } else {
     userId = null;
   }
@@ -96,12 +98,16 @@ app.get("/login", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = {
+    userId,
     email: userId ? users[userId].email : null,
-    urls: userId ? urls[userId] : urls,
+    urls,
+    userUrls: findUrlsByUserId(userId, urls),
   };
   if (!userId) {
     res.render("urls_index_all", templateVars);
   } else {
+
+    
     res.render("urls_index", templateVars);
   }
   
@@ -126,7 +132,7 @@ app.get("/", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   if (userId) {
-    res.json(urls[userId]);
+    res.json(getUrlsByUser(userId, urls));
   } else {
     res.json(urls);
   }
@@ -142,24 +148,24 @@ app.get("/urls/:urlId", (req, res) => {
     email,
   };
   const urlId = req.params.urlId;
-  if (!urls[userId][urlId]) {
+  if (!urls[urlId]) {
     res.status(404);
     res.render("urls_404", templateVars);
   } else {
     templateVars.urlId = urlId;
-    templateVars.longURL = urls[userId][urlId];
+    templateVars.longURL = urls[urlId].longURL;
   }
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
   const urlId = req.params.id;
-  for (const user in urls) {
-    if (urls[user][urlId]) {
-      const longURL = urls[user][urlId];
-      res.redirect(longURL);
-    }
+  const longURL = urls[urlId].longURL;
+
+  if (urls[urlId]) {
+    res.redirect(longURL);
   }
+
   templateVars = {
     email: userId ? users[userId].email : null,
   };
@@ -172,8 +178,9 @@ app.post("/urls", (req, res) => {
   const submittedLongURL = req.body.longURL;
   const newLongURL = formatLongURL(submittedLongURL);
   const newTinyURL = generateRandomString(6);
-  urls[userId] ? urls[userId] : (urls[userId] = {}); // if user doesn't exist, create them-
-  urls[userId][newTinyURL] = newLongURL;
+  urls[newTinyURL] = {};
+  urls[newTinyURL].longURL = newLongURL;
+  urls[newTinyURL].userId = userId;
 
   console.log(`Received new tinyURL, saving database...`);
 
@@ -223,7 +230,7 @@ app.post("/logout", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
-  delete urls[userId][id];
+  delete urls[id];
   console.log(`Deleted ${id} from database...`);
   saveDatabase(urlDatabasePath, urls);
   res.redirect("/urls");
@@ -236,7 +243,7 @@ app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
   const submittedLongURL = req.body.longURL;
   const newLongURL = formatLongURL(submittedLongURL);
-  urls[userId][id] = newLongURL;
+  urls[id] = newLongURL;
   console.log(`Updated ${id} in ${userId}'s database...`);
   saveDatabase(urlDatabasePath, urls);
   res.redirect("/urls");

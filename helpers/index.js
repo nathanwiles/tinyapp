@@ -2,6 +2,7 @@
  * @description: This file is used to compile and export all the helper functions
  */
 
+const findUrlsByUserId = require('./findUrlsByUserId');
 const formatLongURL = require('./formatLongURL');
 const findIdByEmail = require('./findIdByEmail');
 const saveDatabase = require('./saveDatabase');
@@ -11,5 +12,6 @@ module.exports = {
   formatLongURL,
   saveDatabase,
   generateRandomString,
-  findIdByEmail
+  findIdByEmail,
+  findUrlsByUserId,
 };
