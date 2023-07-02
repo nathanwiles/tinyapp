@@ -10,6 +10,7 @@ const User = require("./models/user");
 const { urlDatabasePath, userDatabasePath } = require("./data/constants");
 const bcrypt = require("bcryptjs");
 const cookieSession = require("cookie-session");
+const methodOverride = require("method-override");
 
 const {
   formatLongURL,
@@ -20,22 +21,21 @@ const {
   findUrlsByUserId,
   findEmailByUserId,
 } = require("./helpers/helpersIndex");
-const { url } = require("inspector");
 
 // Import database
 let urls = {};
 readDatabase(urlDatabasePath)
-.then((data) => {
-  urls = data;
+  .then((data) => {
+    urls = data;
     console.log("Imported URL Database:\n");
   })
   .catch((err) => {
     console.error(err);
     urls = {};
   });
-  
-  let users;
-  readDatabase(userDatabasePath)
+
+let users;
+readDatabase(userDatabasePath)
   .then((data) => {
     users = data;
     console.log("Imported User Database:\n");
@@ -44,21 +44,29 @@ readDatabase(urlDatabasePath)
     console.error(err);
     users = {};
   });
-  
-  // Middleware
-  router.use(express.urlencoded({ extended: true }));
-  router.use(
+
+// Middleware
+router.use(express.urlencoded({ extended: true }));
+router.use(methodOverride("_method"));
+router.use(
   cookieSession({
     name: "user_id",
     keys: [generateRandomString(20), generateRandomString(20)],
     maxAge: 24 * 60 * 60 * 1000,
   })
-  );
-  router.use((req, res, next) => {
+);
+router.use(
+  cookieSession({
+    name: "uniqueSessionID",
+    keys: [generateRandomString(20), generateRandomString(20)],
+  })
+);
+
+router.use((req, res, next) => {
   if (req.session.user_id) {
     userId = req.session.user_id;
   } else {
-    userId = null;
+    userId = false;
   }
   next();
 });
@@ -141,8 +149,9 @@ router.get("/urls/:urlId", (req, res) => {
     } else {
       const templateVars = {
         urlId,
-        longURL: urls[urlId].longURL,
         email,
+        longURL: urls[urlId].longURL,
+        visits: urls[urlId].visits,
       };
       res.status(200).render("urls_show", templateVars);
     }
@@ -152,8 +161,18 @@ router.get("/urls/:urlId", (req, res) => {
 router.get("/u/:id", (req, res) => {
   const urlId = req.params.id;
   const longURL = urls[urlId].longURL;
+  const sessionID = req.session.uniqueSessionID;
 
   if (urls[urlId]) {
+    if (!urls[urlId].visits[sessionID]) {
+      const timeStamp = new Date();
+      urls[urlId].visits[sessionID] = {
+        timeStamp,
+        uniqueSessionID: sessionID,
+      };
+      console.log(`Received new visit, saving database...`);
+      saveDatabase(urlDatabasePath, urls);
+    }
     res.redirect(longURL);
   } else {
     res.render("urls_error", {
@@ -168,10 +187,12 @@ router.post("/urls", (req, res) => {
   const submittedLongURL = req.body.longURL;
   const newLongURL = formatLongURL(submittedLongURL);
   const newTinyURL = generateRandomString(6);
-  urls[newTinyURL] = {};
-  urls[newTinyURL].longURL = newLongURL;
-  urls[newTinyURL].userId = userId;
 
+  urls[newTinyURL] = {
+    longURL: newLongURL,
+    userId: userId,
+    visits: {},
+  };
   console.log(`Received new tinyURL, saving database...`);
 
   saveDatabase(urlDatabasePath, urls);
@@ -222,7 +243,7 @@ router.post("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-router.post("/urls/:urlId/delete", (req, res) => {
+router.delete("/urls/:urlId/delete", (req, res) => {
   const urlId = req.params.urlId;
   if (!urls[urlId]) {
     res.status(404).send("URL not found");
@@ -238,7 +259,7 @@ router.post("/urls/:urlId/delete", (req, res) => {
   }
 });
 
-router.post("/urls/:id", (req, res) => {
+router.put("/urls/:id", (req, res) => {
   if (!urls[req.params.id]) {
     res.status(404).send("URL not found");
   } else if (!userId) {

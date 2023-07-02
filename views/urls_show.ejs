@@ -18,7 +18,11 @@
       </div>
       <div class="card-footer text-muted">
         <h4>Edit:</h4>
-        <form class="form" action="/urls/<%= urlId %>" method="POST">
+        <form
+          class="form"
+          action="/urls/<%= urlId %>?_method=PUT"
+          method="POST"
+        >
           <div class="form-group mb-2">
             <label for="longURL">New URL:</label>
             <input
