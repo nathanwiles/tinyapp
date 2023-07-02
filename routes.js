@@ -57,8 +57,9 @@ router.use(
 );
 router.use(
   cookieSession({
-    name: "uniqueSessionID",
+    name: "unique_id",
     keys: [generateRandomString(20), generateRandomString(20)],
+    maxAge: 60 * 60 * 1000,
   })
 );
 
@@ -152,6 +153,7 @@ router.get("/urls/:urlId", (req, res) => {
         email,
         longURL: urls[urlId].longURL,
         visits: urls[urlId].visits,
+        visitors: urls[urlId].visitors,
       };
       res.status(200).render("urls_show", templateVars);
     }
@@ -160,19 +162,26 @@ router.get("/urls/:urlId", (req, res) => {
 
 router.get("/u/:id", (req, res) => {
   const urlId = req.params.id;
-  const longURL = urls[urlId].longURL;
-  const sessionID = req.session.uniqueSessionID;
 
   if (urls[urlId]) {
-    if (!urls[urlId].visits[sessionID]) {
-      const timeStamp = new Date();
-      urls[urlId].visits[sessionID] = {
-        timeStamp,
-        uniqueSessionID: sessionID,
-      };
-      console.log(`Received new visit, saving database...`);
-      saveDatabase(urlDatabasePath, urls);
+    const longURL = urls[urlId].longURL;
+    const timeStamp = new Date();
+    if (!req.session.unique_id) {
+      req.session.unique_id = generateRandomString(20);
     }
+   
+    const sessionID = req.session.unique_id;
+
+    urls[urlId].visits++;
+    if ((urls[urlId].visitors.map((index) => {urls[urlId].visitors[index].sessionID === sessionID}) === -1)) {
+      console.log("New visitor, saving database...");
+    urls[urlId].visitors.push({
+      timeStamp,
+      sessionID,
+    });
+    console.log(`Received new visit, saving database...`);
+    saveDatabase(urlDatabasePath, urls);
+
     res.redirect(longURL);
   } else {
     res.render("urls_error", {
@@ -191,7 +200,8 @@ router.post("/urls", (req, res) => {
   urls[newTinyURL] = {
     longURL: newLongURL,
     userId: userId,
-    visits: {},
+    visits: 0,
+    visitors: [],
   };
   console.log(`Received new tinyURL, saving database...`);
 
@@ -225,7 +235,8 @@ router.post("/register", (req, res) => {
 });
 
 router.post("/login", (req, res) => {
-  loginEmail = req.body.email;
+  const loginEmail = req.body.email;
+
   let userId = findIdByEmail(loginEmail, users);
   if (userId && bcrypt.compareSync(req.body.password, users[userId].password)) {
     req.session.user_id = userId;
