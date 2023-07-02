@@ -1,22 +1,20 @@
 {
-  "R4G4xZ": {
-    "longURL": "http://www.google.com",
-    "userId": "f2HauNvkR6",
-    "visits": {}
-  },
-  "ZiOqgx": {
+  "ShtBdO": {
     "longURL": "http://facebook.com",
     "userId": "jUqoap2QZp",
-    "visits": {}
+    "visits": 0,
+    "visitors": []
   },
-  "pEKUtx": {
-    "longURL": "http://www.lighthouselabs.ca",
+  "jYORzk": {
+    "longURL": "http://lighthouselabs.ca",
     "userId": "jUqoap2QZp",
-    "visits": {}
+    "visits": 0,
+    "visitors": []
   },
-  "lOtfE4": {
-    "longURL": "http://www.lighthouselabs.ca",
-    "userId": "f2HauNvkR6",
-    "visits": {}
+  "ryIKL0": {
+    "longURL": "http://www.google.com",
+    "userId": "jUqoap2QZp",
+    "visits": 0,
+    "visitors": []
   }
 }
