@@ -70,5 +70,69 @@
         "sessionID": "Crd7uO1dhFiHIlit8rFp"
       }
     ]
+  },
+  "pBnYnm": {
+    "longURL": "http://facebook.com",
+    "userId": "jUqoap2QZp",
+    "visits": 9,
+    "uniqueVisits": 1,
+    "visitors": [
+      {
+        "timeStamp": "2023-07-02T09:57:11.717Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      },
+      {
+        "timeStamp": "2023-07-02T09:57:11.941Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      },
+      {
+        "timeStamp": "2023-07-02T09:57:12.139Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      },
+      {
+        "timeStamp": "2023-07-02T09:57:12.329Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      },
+      {
+        "timeStamp": "2023-07-02T09:57:12.497Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      },
+      {
+        "timeStamp": "2023-07-02T09:57:12.661Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      },
+      {
+        "timeStamp": "2023-07-02T09:57:13.010Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      },
+      {
+        "timeStamp": "2023-07-02T09:57:13.146Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      },
+      {
+        "timeStamp": "2023-07-02T09:57:13.309Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      }
+    ]
+  },
+  "d0xRns": {
+    "longURL": "http://google.com",
+    "userId": "jUqoap2QZp",
+    "visits": 3,
+    "uniqueVisits": 1,
+    "visitors": [
+      {
+        "timeStamp": "2023-07-02T09:57:31.395Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      },
+      {
+        "timeStamp": "2023-07-02T09:57:35.639Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      },
+      {
+        "timeStamp": "2023-07-02T09:57:35.798Z",
+        "sessionID": "D4twKjj0hXUGgy1dqW9L"
+      }
+    ]
   }
 }

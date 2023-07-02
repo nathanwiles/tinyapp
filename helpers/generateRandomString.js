@@ -1,6 +1,7 @@
 /**
  * @param {length} number representing the length of the string to be generated
- * @returns {string} a random string of 10 characters
+ * 
+ * @returns {string} a random string of provided length
  */
 
 const generateRandomString = function (length) {
