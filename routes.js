@@ -153,6 +153,7 @@ router.get("/urls/:urlId", (req, res) => {
         email,
         longURL: urls[urlId].longURL,
         visits: urls[urlId].visits,
+        uniqueVisits: urls[urlId].uniqueVisits,
         visitors: urls[urlId].visitors,
       };
       res.status(200).render("urls_show", templateVars);
@@ -169,19 +170,22 @@ router.get("/u/:id", (req, res) => {
     if (!req.session.unique_id) {
       req.session.unique_id = generateRandomString(20);
     }
-   
     const sessionID = req.session.unique_id;
-
+    
     urls[urlId].visits++;
-    if ((urls[urlId].visitors.map((index) => {urls[urlId].visitors[index].sessionID === sessionID}) === -1)) {
-      console.log("New visitor, saving database...");
+    //check if visitor has visited url before
+    if (!urls[urlId].visitors.some((visitor) => visitor.sessionID === sessionID)) {
+      urls[urlId].uniqueVisits++;
+      console.log("New unique visitor, saving database...");
+    }
+
     urls[urlId].visitors.push({
       timeStamp,
       sessionID,
     });
     console.log(`Received new visit, saving database...`);
     saveDatabase(urlDatabasePath, urls);
-
+  
     res.redirect(longURL);
   } else {
     res.render("urls_error", {
@@ -201,6 +205,7 @@ router.post("/urls", (req, res) => {
     longURL: newLongURL,
     userId: userId,
     visits: 0,
+    uniqueVisits: 0,
     visitors: [],
   };
   console.log(`Received new tinyURL, saving database...`);
@@ -209,6 +214,7 @@ router.post("/urls", (req, res) => {
 
   res.redirect(`/urls/${newTinyURL}`);
 });
+
 router.post("/register", (req, res) => {
   if (!req.body.email || !req.body.password) {
     res.status(400).render("urls_error", {

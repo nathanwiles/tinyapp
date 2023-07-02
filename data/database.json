@@ -1,20 +1,74 @@
 {
-  "ShtBdO": {
-    "longURL": "http://facebook.com",
-    "userId": "jUqoap2QZp",
-    "visits": 0,
-    "visitors": []
-  },
-  "jYORzk": {
+  "RdBDj1": {
     "longURL": "http://lighthouselabs.ca",
     "userId": "jUqoap2QZp",
-    "visits": 0,
-    "visitors": []
-  },
-  "ryIKL0": {
-    "longURL": "http://www.google.com",
-    "userId": "jUqoap2QZp",
-    "visits": 0,
-    "visitors": []
+    "visits": 16,
+    "uniqueVisits": 1,
+    "visitors": [
+      {
+        "timeStamp": "2023-07-02T09:08:43.808Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:11:44.983Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:11:54.774Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:24.398Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:36.644Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:38.192Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:40.318Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:41.953Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:43.166Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:44.263Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:45.603Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:46.398Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:47.374Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:48.825Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:16:50.187Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      },
+      {
+        "timeStamp": "2023-07-02T09:18:46.970Z",
+        "sessionID": "Crd7uO1dhFiHIlit8rFp"
+      }
+    ]
   }
 }
