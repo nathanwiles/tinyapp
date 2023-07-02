@@ -9,6 +9,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("./models/user");
 const { urlDatabasePath, userDatabasePath } = require("./data/constants");
+const bcrypt = require("bcryptjs");
 
 const {
   formatLongURL,
@@ -177,7 +178,7 @@ router.post("/register", (req, res) => {
     });
   } else {
     email = req.body.email;
-    const password = req.body.password;
+    const password = bcrypt.hashSync(req.body.password, 10);
     const newUser = new User(email, password);
 
     if (findIdByEmail(email, users)) {
@@ -196,9 +197,8 @@ router.post("/register", (req, res) => {
 
 router.post("/login", (req, res) => {
   loginEmail = req.body.email;
-  password = req.body.password;
   let userId = findIdByEmail(loginEmail, users);
-  if (userId && users[userId].password === password) {
+  if (userId && bcrypt.compareSync(req.body.password, users[userId].password)) {
     res.cookie("user_id", userId);
     res.redirect("/urls");
   } else {
