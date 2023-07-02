@@ -8,14 +8,29 @@
 <body>
   <%- include('partials/_header') %>
   <main style="margin: 1em">
-    <h1>Welcome to TinyApp!</h1>
-    <h3>What is TinyApp?</h3>
+    <h1 style="text-align: center;">Welcome to TinyApp!</h1>
+    <h3 style="text-align: center;">What is TinyApp?</h3>
     <p>
-      TinyApp is a web application built with <b>Node</b> and <b>Express</b> that allows users to shorten long URLs into a randomly generated 6 character id which is then saved to this server.
+      TinyApp is a full stack web application built with <b>Node</b> and <b>Express</b> that allows users to shorten long URLs into a randomly generated 6 character id which is then saved to this server.
     </p>
-    <h3>How do I use TinyApp?</h3>
+    <h3 style="text-align: center;">How do I use TinyApp?</h3>
     <p>
-      To use TinyApp, click on the <a href="/urls">My URLs</a> tab to see what URLs you have saved to this server. If you have not saved any URLs, click on the <a href="/urls/new">Add New URL</a> tab to add a new URL to this server.
+      To use TinyApp, first you must Register, then, Log In.
+      once you're in you can click on the <a href="/urls">My URLs</a> tab to see what URLs you have saved to this server. If you have not saved any URLs, click on the <a href="/urls/new">Add New URL</a> tab to add a new URL to your database.
+      once you have registerd an url, you can click on the <b>Edit</b> button to edit the URL, or the <b>Delete</b> button to remove the URL from your database.
+    </p>
+    <h3 style="text-align: center;"> How do I get started?</h3>
+    <p>
+      To get started, click on the <a href="/register">Register</a> tab to register an account, you will be automatically be logged in to your account upon registering. <br>
+      To link to a website, simply type in the URL you wish to link to in the <b>Long URL</b> field, then click on the <b>Submit</b> button. You will be redirected to the <b>My URLs</b> page where you can see your newly created URL.<br>
+      To edit a URL, click on the <b>Edit</b> button, you will be redirected to the <b>Edit URL</b> page where you can make any neccessary changes to the URL. <br>
+      To delete a URL, click on the <b>Delete</b> button, you will see that the URL has been removed from your database.
+      Log out at any time by pressing the "Logout" button in the top right corner of the page.
+    </p>
+    <h3 style="text-align: center;">What else can I do with TinyApp?</h3>
+    <p> 
+      You can share your shortened URLs with your friends and family, or you can use it to keep track of your favourite websites.
+      you can also use it to keep track of how often your link is being used by checking the <b>Usage Data</b> area on the <b>My URLs</b> page.
     </p>
   </main>
   <%- include('partials/_bootstrap_js') %>
