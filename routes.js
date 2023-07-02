@@ -4,12 +4,12 @@
  * responsible for handling all requests and responses.
  * imports databases from the .json files and saves on change.
  */
-
 const express = require("express");
 const router = express.Router();
 const User = require("./models/user");
 const { urlDatabasePath, userDatabasePath } = require("./data/constants");
 const bcrypt = require("bcryptjs");
+const cookieSession = require("cookie-session");
 
 const {
   formatLongURL,
@@ -25,17 +25,17 @@ const { url } = require("inspector");
 // Import database
 let urls = {};
 readDatabase(urlDatabasePath)
-  .then((data) => {
-    urls = data;
+.then((data) => {
+  urls = data;
     console.log("Imported URL Database:\n");
   })
   .catch((err) => {
     console.error(err);
     urls = {};
   });
-
-let users;
-readDatabase(userDatabasePath)
+  
+  let users;
+  readDatabase(userDatabasePath)
   .then((data) => {
     users = data;
     console.log("Imported User Database:\n");
@@ -44,11 +44,18 @@ readDatabase(userDatabasePath)
     console.error(err);
     users = {};
   });
-
-// Middleware
-router.use((req, res, next) => {
-  if (req.cookies.user_id) {
-    userId = req.cookies.user_id;
+  
+  // Middleware
+  router.use(express.urlencoded({ extended: true }));
+  router.use(
+  cookieSession({
+    name: "user_id",
+    keys: [generateRandomString(20), generateRandomString(20)],
+  })
+  );
+  router.use((req, res, next) => {
+  if (req.session.user_id) {
+    userId = req.session.user_id;
   } else {
     userId = null;
   }
@@ -189,7 +196,7 @@ router.post("/register", (req, res) => {
     } else {
       users[newUser.id] = newUser;
       saveDatabase(userDatabasePath, users);
-      res.cookie("user_id", newUser.id);
+      res.session.user_id = newUser.id;
       res.redirect("/urls");
     }
   }
@@ -199,7 +206,7 @@ router.post("/login", (req, res) => {
   loginEmail = req.body.email;
   let userId = findIdByEmail(loginEmail, users);
   if (userId && bcrypt.compareSync(req.body.password, users[userId].password)) {
-    res.cookie("user_id", userId);
+    req.session.user_id = userId;
     res.redirect("/urls");
   } else {
     res.status(403).render("urls_error", {
@@ -210,7 +217,7 @@ router.post("/login", (req, res) => {
 });
 
 router.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/login");
 });
 
