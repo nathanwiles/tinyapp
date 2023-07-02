@@ -36,6 +36,20 @@
           </div>
         </form>
       </div>
+      <div>
+        <h4>Usage Stats:</h4>
+        <div class="card-footer text-muted">
+          <p class="card-text">Visits: <%= visits %> </p>
+          <% for (const visitor in (visitors)) { %>
+            <tr>
+              <td>Session Id:<%= visitors[visitor].sessionID %></td>
+              <td>Time Stamp: <%= visitors[visitor].timeStamp %></td>
+            </tr>
+            <br />
+            <% } %>
+          </table>
+        </div>
+      </div>
     </div>
     <%- include('partials/_bootstrap_js') %>
   </body>
