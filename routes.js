@@ -19,7 +19,7 @@ const {
   findIdByEmail,
   findUrlsByUserId,
   findEmailByUserId,
-} = require("./helpers/index");
+} = require("./helpers/helpersIndex");
 const { url } = require("inspector");
 
 // Import database
