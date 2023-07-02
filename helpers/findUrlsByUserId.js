@@ -1,8 +1,11 @@
 /**
- * @description Find all urls by user
  * 
  * @param {string} id - user id
  * @param {object} urlDatabase - url database
+ * 
+ * @description Find all urls belonging to user
+ * 
+ * 
  * @returns {object} urls - urls by user
  * 
  * @example

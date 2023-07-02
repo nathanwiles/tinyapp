@@ -8,17 +8,22 @@
   <body>
     <%- include('partials/_header') %>
     <div class="card text-center">
-      <div class="card-header"></div>
+     
       <div class="card-body">
-        <h5 class="card-title">TinyURL for <%= longURL %></h5>
+        <h3 class="card-title">TinyURL for <%= longURL %></h3>
         <p class="card-text">
           Tiny URL ID:
           <a class="nav_item nav-link" href="/u/<%= urlId %>"><%= urlId %></a>
         </p>
       </div>
+
       <div class="card-footer text-muted">
         <h4>Edit:</h4>
-        <form class="form" action="/urls/<%= urlId %>" method="POST">
+        <form
+          class="form"
+          action="/urls/<%= urlId %>?_method=PUT"
+          method="POST"
+        >
           <div class="form-group mb-2">
             <label for="longURL">New URL:</label>
             <input
@@ -31,6 +36,34 @@
             <button type="submit" class="btn btn-primary">Submit</button>
           </div>
         </form>
+      </div>
+
+      <div>
+        <h4>Usage Stats:</h4>
+        <div class="card-footer text-muted">
+          <p class="card-text">Visits: <%= visits %></p>
+          <p class="card-text">Unique Visits: <%= uniqueVisits %></p>
+        </div>
+
+        <div>
+          <h4>Visitors:</h4>
+          <table class="table table-striped" style="margin: 0 auto;">
+            <thead>
+              <tr>
+                <th scope="col">Session ID</th>
+                <th scope="col">Time Stamp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for (const visitor in visitors) { %>
+              <tr>
+                <td><%= visitors[visitor].sessionID %></td>
+                <td><%= visitors[visitor].timeStamp %></td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>    
       </div>
     </div>
     <%- include('partials/_bootstrap_js') %>

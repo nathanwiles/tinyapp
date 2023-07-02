@@ -14,8 +14,9 @@ const getProtocol = (string = '') => {
 
 
 /**
- * Formats the longUrl to include http(s)://www. if it is not included.
- * also works if submittedLongUrl already contains "http(s)", "www.", or //
+ * Formats the longUrl to include http(s):// if it doesn't already.
+ * Works if submittedLongUrl already contains "http(s)", //, or neither.
+ * 
  * @param {*} submittedLongUrl
  *
  * @returns  {string} formattedLongUrl

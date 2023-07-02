@@ -10,6 +10,7 @@ const User = require("./models/user");
 const { urlDatabasePath, userDatabasePath } = require("./data/constants");
 const bcrypt = require("bcryptjs");
 const cookieSession = require("cookie-session");
+const methodOverride = require("method-override");
 
 const {
   formatLongURL,
@@ -20,22 +21,21 @@ const {
   findUrlsByUserId,
   findEmailByUserId,
 } = require("./helpers/helpersIndex");
-const { url } = require("inspector");
 
 // Import database
 let urls = {};
 readDatabase(urlDatabasePath)
-.then((data) => {
-  urls = data;
+  .then((data) => {
+    urls = data;
     console.log("Imported URL Database:\n");
   })
   .catch((err) => {
     console.error(err);
     urls = {};
   });
-  
-  let users;
-  readDatabase(userDatabasePath)
+
+let users;
+readDatabase(userDatabasePath)
   .then((data) => {
     users = data;
     console.log("Imported User Database:\n");
@@ -44,21 +44,30 @@ readDatabase(urlDatabasePath)
     console.error(err);
     users = {};
   });
-  
-  // Middleware
-  router.use(express.urlencoded({ extended: true }));
-  router.use(
+
+// Middleware
+router.use(express.urlencoded({ extended: true }));
+router.use(methodOverride("_method"));
+router.use(
   cookieSession({
     name: "user_id",
     keys: [generateRandomString(20), generateRandomString(20)],
     maxAge: 24 * 60 * 60 * 1000,
   })
-  );
-  router.use((req, res, next) => {
+);
+router.use(
+  cookieSession({
+    name: "unique_id",
+    keys: [generateRandomString(20), generateRandomString(20)],
+    maxAge: 60 * 60 * 1000,
+  })
+);
+
+router.use((req, res, next) => {
   if (req.session.user_id) {
     userId = req.session.user_id;
   } else {
-    userId = null;
+    userId = false;
   }
   next();
 });
@@ -141,8 +150,11 @@ router.get("/urls/:urlId", (req, res) => {
     } else {
       const templateVars = {
         urlId,
-        longURL: urls[urlId].longURL,
         email,
+        longURL: urls[urlId].longURL,
+        visits: urls[urlId].visits,
+        uniqueVisits: urls[urlId].uniqueVisits,
+        visitors: urls[urlId].visitors,
       };
       res.status(200).render("urls_show", templateVars);
     }
@@ -151,9 +163,29 @@ router.get("/urls/:urlId", (req, res) => {
 
 router.get("/u/:id", (req, res) => {
   const urlId = req.params.id;
-  const longURL = urls[urlId].longURL;
 
   if (urls[urlId]) {
+    const longURL = urls[urlId].longURL;
+    const timeStamp = new Date();
+    if (!req.session.unique_id) {
+      req.session.unique_id = generateRandomString(20);
+    }
+    const sessionID = req.session.unique_id;
+    
+    urls[urlId].visits++;
+    //check if visitor has visited url before
+    if (!urls[urlId].visitors.some((visitor) => visitor.sessionID === sessionID)) {
+      urls[urlId].uniqueVisits++;
+      console.log("New unique visitor, saving database...");
+    }
+
+    urls[urlId].visitors.push({
+      timeStamp,
+      sessionID,
+    });
+    console.log(`Received new visit, saving database...`);
+    saveDatabase(urlDatabasePath, urls);
+  
     res.redirect(longURL);
   } else {
     res.render("urls_error", {
@@ -168,16 +200,22 @@ router.post("/urls", (req, res) => {
   const submittedLongURL = req.body.longURL;
   const newLongURL = formatLongURL(submittedLongURL);
   const newTinyURL = generateRandomString(6);
-  urls[newTinyURL] = {};
-  urls[newTinyURL].longURL = newLongURL;
-  urls[newTinyURL].userId = userId;
 
+  urls[newTinyURL] = {
+    longURL: newLongURL,
+    userId: userId,
+    visits: 0,
+    uniqueVisits: 0,
+    visitors: [],
+    created: new Date(),
+  };
   console.log(`Received new tinyURL, saving database...`);
 
   saveDatabase(urlDatabasePath, urls);
 
   res.redirect(`/urls/${newTinyURL}`);
 });
+
 router.post("/register", (req, res) => {
   if (!req.body.email || !req.body.password) {
     res.status(400).render("urls_error", {
@@ -197,14 +235,15 @@ router.post("/register", (req, res) => {
     } else {
       users[newUser.id] = newUser;
       saveDatabase(userDatabasePath, users);
-      res.session.user_id = newUser.id;
+      req.session.user_id = newUser.id;
       res.redirect("/urls");
     }
   }
 });
 
 router.post("/login", (req, res) => {
-  loginEmail = req.body.email;
+  const loginEmail = req.body.email;
+
   let userId = findIdByEmail(loginEmail, users);
   if (userId && bcrypt.compareSync(req.body.password, users[userId].password)) {
     req.session.user_id = userId;
@@ -222,7 +261,7 @@ router.post("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-router.post("/urls/:urlId/delete", (req, res) => {
+router.delete("/urls/:urlId/delete", (req, res) => {
   const urlId = req.params.urlId;
   if (!urls[urlId]) {
     res.status(404).send("URL not found");
@@ -238,7 +277,7 @@ router.post("/urls/:urlId/delete", (req, res) => {
   }
 });
 
-router.post("/urls/:id", (req, res) => {
+router.put("/urls/:id", (req, res) => {
   if (!urls[req.params.id]) {
     res.status(404).send("URL not found");
   } else if (!userId) {

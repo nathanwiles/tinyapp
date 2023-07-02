@@ -4,10 +4,9 @@
  */
 const express = require("express");
 const routes = require("./routes");
-
+const { PORT } = require("./data/constants")
 // Setup server
-const app = express();
-const PORT = 8080; // default port 8080
+const app = express();; 
 app.set("view engine", "ejs");
 let userId;
 
@@ -15,6 +14,6 @@ let userId;
 app.use(routes);
 
 // Listen for requests
-app.listen(PORT, () => {
+app.listen(PORT, () => { // default port 8080
   console.log(`tinyapp listening on port ${PORT}!`);
 });
