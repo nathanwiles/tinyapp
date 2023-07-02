@@ -51,6 +51,7 @@ readDatabase(urlDatabasePath)
   cookieSession({
     name: "user_id",
     keys: [generateRandomString(20), generateRandomString(20)],
+    maxAge: 24 * 60 * 60 * 1000,
   })
   );
   router.use((req, res, next) => {
@@ -246,7 +247,6 @@ router.post("/urls/:id", (req, res) => {
     res.status(403).send("You do not have permission to edit this URL");
   } else {
     const urlId = req.params.id;
-    const userId = userId;
     const submittedLongURL = req.body.longURL;
     const newLongURL = formatLongURL(submittedLongURL);
     urls[urlId].longURL = newLongURL;
