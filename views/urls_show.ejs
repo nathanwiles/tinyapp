@@ -45,25 +45,25 @@
           <p class="card-text">Unique Visits: <%= uniqueVisits %></p>
         </div>
 
-        <div class="card-footer text-muted">
-          <h4 class="card-text">Visitors:</h4>
-          <table
-            class="table table-responsive table-striped"
-            style="text-align: center;">
+        <div>
+          <h4>Visitors:</h4>
+          <table class="table table-striped" style="margin: 0 auto;">
             <thead>
               <tr>
                 <th scope="col">Session ID</th>
                 <th scope="col">Time Stamp</th>
               </tr>
             </thead>
-            <% for (const visitor in (visitors)) { %>
-            <tr>
-              <td><%= visitors[visitor].sessionID %></td>
-              <td><%= visitors[visitor].timeStamp %></td>
-            </tr>
-            <% } %>
+            <tbody>
+              <% for (const visitor in visitors) { %>
+              <tr>
+                <td><%= visitors[visitor].sessionID %></td>
+                <td><%= visitors[visitor].timeStamp %></td>
+              </tr>
+              <% } %>
+            </tbody>
           </table>
-        </div>
+        </div>    
       </div>
     </div>
     <%- include('partials/_bootstrap_js') %>
