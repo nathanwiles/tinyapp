@@ -207,6 +207,7 @@ router.post("/urls", (req, res) => {
     visits: 0,
     uniqueVisits: 0,
     visitors: [],
+    created: new Date(),
   };
   console.log(`Received new tinyURL, saving database...`);
 

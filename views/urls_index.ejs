@@ -17,6 +17,7 @@
             <th scope="col">Delete</th>
             <th scope="col">Visits</th>
             <th scope="col">Unique Visits</th>
+            <th scope="col">Created</th>
           </tr>
         </thead>
 
@@ -35,6 +36,7 @@
                 </td>
                 <td><%= userUrls[urlId].visits %></td>
                 <td><%= userUrls[urlId].uniqueVisits %></td>
+                <td><%= userUrls[urlId].created%></td>
               </tr>
          <% } %>
         </tbody>
