@@ -235,7 +235,7 @@ router.post("/register", (req, res) => {
     } else {
       users[newUser.id] = newUser;
       saveDatabase(userDatabasePath, users);
-      res.session.user_id = newUser.id;
+      req.session.user_id = newUser.id;
       res.redirect("/urls");
     }
   }
