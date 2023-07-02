@@ -7,7 +7,7 @@
 
 const express = require("express");
 const router = express.Router();
-const User = require("./helpers/userClass");
+const User = require("./models/user");
 const { urlDatabasePath, userDatabasePath } = require("./data/constants");
 
 const {
@@ -23,7 +23,7 @@ const { url } = require("inspector");
 
 // Import database
 let urls = {};
-readDatabase("./data/database.json")
+readDatabase(urlDatabasePath)
   .then((data) => {
     urls = data;
     console.log("Imported URL Database:\n");
@@ -34,7 +34,7 @@ readDatabase("./data/database.json")
   });
 
 let users;
-readDatabase("./data/user_data.json")
+readDatabase(userDatabasePath)
   .then((data) => {
     users = data;
     console.log("Imported User Database:\n");
@@ -112,7 +112,7 @@ router.get("/hello", (req, res) => {
 });
 
 router.get("/urls/:urlId", (req, res) => {
-  if ((!userId )) {
+  if (!userId) {
     res.status(401).render("urls_error", {
       email: false,
       error: "Please login to view and edit URLs",
