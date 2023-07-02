@@ -1,4 +1,4 @@
-const generateRandomString = require("./generateRandomString");
+const generateRandomString = require("../helpers/generateRandomString");
 
 module.exports = class User {
   constructor(email, password) {
@@ -6,4 +6,4 @@ module.exports = class User {
     this.email = email;
     this.password = password;
   }
-}
+};
