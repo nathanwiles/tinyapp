@@ -12,7 +12,7 @@ const findEmailByUserId = (id, userDatabase) => {
       return userDatabase[user].email;
     }
   }
-  return null;
+  return false;
 }
 
 module.exports = findEmailByUserId;
